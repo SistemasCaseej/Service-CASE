@@ -9,17 +9,14 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.6" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.1" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Controllers\" />
-      <Folder Include="Data\" />
-      <Folder Include="Endpoints\" />
       <Folder Include="Middlewares\" />
-      <Folder Include="Models\" />
-      <Folder Include="Services\" />
-      <Folder Include="Swagger\" />
       <Folder Include="Utils\" />
     </ItemGroup>
 
