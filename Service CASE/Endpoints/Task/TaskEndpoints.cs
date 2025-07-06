@@ -35,10 +35,10 @@ public static class TaskEndpoints
         });
 
         app.MapDelete("/task/{id:int}", async (int id, UserTaskService service) =>
-            {
+        {
                 var deleted = await service.DeleteTaskAsync(id);
-                return deleted ? Results.NoContent() : Results.NotFound();
-            });
+                return deleted ? Results.NoContent() : Results.NotFound(); 
+        });
 
         }
 }
