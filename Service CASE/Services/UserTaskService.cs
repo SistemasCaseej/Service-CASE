@@ -1,52 +1,39 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Service_CASE.Data;
+﻿using MongoDB.Driver;
 using Service_CASE.Models.Task;
 
 namespace Service_CASE.Services;
 
 public class UserTaskService
 {
-    private readonly AppDbContext _context;
+    private readonly IMongoCollection<UserTask> _collection;
 
-    public UserTaskService(AppDbContext context)
+    public UserTaskService()
     {
-        _context = context;
-    }
-    
-    public async Task<UserTask> CreateTaskAsync(UserTask userTask)
-    {
-     _context.UserTasks.Add(userTask);
-     await _context.SaveChangesAsync();
-     return userTask;
-    }
-
-    public async Task<UserTask?> UpdateTaskAsync(int id, UserTask updatedTask)
-    {
-        var existingTask = await _context.UserTasks.FindAsync(id);
-        if (existingTask == null)
-            return null;
+        var connectionString = Environment.GetEnvironmentVariable("Connection_String");
         
-        existingTask.title = updatedTask.title;
-        existingTask.description = updatedTask.description;
-        existingTask.responsible = updatedTask.responsible;
-        existingTask.department = updatedTask.department;
-        existingTask.createdBy = updatedTask.createdBy;
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException("A variável de ambiente CONNECTION_STRING não foi encontrada ou está vazia.");
+        }
         
-        await _context.SaveChangesAsync();
-        return existingTask;
+        var client = new MongoClient(connectionString);
+        var database = client.GetDatabase("sistema_case");
+        _collection = database.GetCollection<UserTask>("tasks");
     }
 
-    public async Task<bool> DeleteTaskAsync(int id)
+    public async Task<List<UserTask>> GetAllTaskAsync()
     {
-        var task = await _context.UserTasks.FindAsync(id);
-        if (task == null)
-            return false;
-        
-        _context.UserTasks.Remove(task);
-        await _context.SaveChangesAsync();
-        return true;
+       return await _collection.Find(_ => true).ToListAsync();
     }
-    
-    public async Task<List<UserTask>> GetUsersAsync() =>
-        await _context.UserTasks.ToListAsync();
+
+    public async Task<UserTask?> GetByIdAsync(string id)
+    {
+        return await _collection.Find(p => p.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task<UserTask?> CreateTaskAsync(UserTask task)
+    {
+        await _collection.InsertOneAsync(task);
+        return task;
+    }
 }
