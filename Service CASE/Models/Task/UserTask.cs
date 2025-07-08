@@ -1,8 +1,11 @@
-﻿namespace Service_CASE.Models.Task;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Service_CASE.Models.Task;
 
 public class UserTask
-{
-    public int Id { get; set; } 
+{   
+    public string? Id { get; set; } 
     public string title { get; set; }
     public string description { get; set; } 
     //public DateOnly deadLine { get; set; }
