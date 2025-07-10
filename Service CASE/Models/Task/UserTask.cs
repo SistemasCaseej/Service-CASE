@@ -5,6 +5,8 @@ namespace Service_CASE.Models.Task;
 
 public class UserTask
 {   
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; } 
     public string title { get; set; }
     public string description { get; set; } 
