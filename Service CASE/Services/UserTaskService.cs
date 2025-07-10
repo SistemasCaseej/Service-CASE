@@ -26,7 +26,7 @@ public class UserTaskService
        return await _collection.Find(_ => true).ToListAsync();
     }
 
-    public async Task<UserTask?> GetByIdAsync(string id)
+    public async Task<UserTask?> GetTaskByIdAsync(string id)
     {
         return await _collection.Find(p => p.Id == id).FirstOrDefaultAsync();
     }
@@ -34,6 +34,18 @@ public class UserTaskService
     public async Task<UserTask?> CreateTaskAsync(UserTask task)
     {
         await _collection.InsertOneAsync(task);
+        return task;
+    }
+
+    public async Task<bool> UpdateTaskAsync(string id, UserTask updatedTask)
+    {
+        var result  = await _collection.ReplaceOneAsync(p => p.Id == id, updatedTask);
+        return result.ModifiedCount > 1;
+    }
+
+    public async Task<UserTask?> DeleteTaskAsync(string id)
+    {
+        var task = await _collection.FindOneAndDeleteAsync(task => task.Id == id);
         return task;
     }
 }
