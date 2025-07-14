@@ -1,5 +1,6 @@
 ﻿using MongoDB.Driver;
 using Service_CASE.Dto;
+using Service_CASE.Dto.Department;
 using Service_CASE.Models.Department;
 
 namespace Service_CASE.Services;
@@ -22,6 +23,18 @@ public class DepartmentService
         _collection = database.GetCollection<Department>("departments");
     }
 
+    public async Task<ReadDepartmentDto?> GetDepartmentById(string id)
+    {
+        var department = await _collection.Find(department => department.Id == id).FirstOrDefaultAsync();
+        
+        if (department == null)
+            return null;
+
+        var readSingleDepartament = ReadDepartmentDto.FromModel(department);
+        
+        return readSingleDepartament;
+    }
+    
     public async Task<List<ReadDepartmentDto>> GetAllDepartments()
     {
         var departments = await _collection.Find(_ => true).ToListAsync();
@@ -40,12 +53,37 @@ public class DepartmentService
         return ReadDepartmentDto.FromModel(department);
     }
 
+    public async Task<ReadDepartmentDto?> UpdateDepartment(string id, UpdateDepartmentDto departmentDto)
+    {
+        var existing = await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+        
+        if (existing == null)
+            return null;
+        
+        if (!string.IsNullOrWhiteSpace(departmentDto.Name))
+            existing.Name = departmentDto.Name;
+
+        if (!string.IsNullOrWhiteSpace(departmentDto.Description))
+            existing.Description = departmentDto.Description;
+
+        if (!string.IsNullOrWhiteSpace(departmentDto.Responsible))
+            existing.Responsible = departmentDto.Responsible;
+
+        if (!string.IsNullOrWhiteSpace(departmentDto.ResponsibleEmail))
+            existing.ResponsibleEmail = departmentDto.ResponsibleEmail;
+        
+        await _collection.ReplaceOneAsync(x => x.Id == id, existing);
+        
+        return ReadDepartmentDto.FromModel(existing);
+
+    }
+
     public async Task<ReadDepartmentDto> DeleteDepartment(string id)
     {
         var department = await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
         
         if (department == null)
-            return null;
+            throw new KeyNotFoundException("Departamento não encontrado.");
 
         await _collection.DeleteOneAsync(x => x.Id == id);
         
