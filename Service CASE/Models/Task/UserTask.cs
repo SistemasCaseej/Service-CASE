@@ -15,9 +15,13 @@ public class UserTask
     public string department {  get; set; } //Troca para a entidade Departamento depois
     public string createdBy  { get; set; }
     
+    [BsonRepresentation(BsonType.String)]
+    public Status status { get; set; }
 
     public enum Status
     {
-        Todo, InProgress, Done
+        Todo, 
+        InProgress, 
+        Done
     }
 }
