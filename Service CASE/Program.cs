@@ -4,6 +4,7 @@ using Service_CASE.Swagger;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<UserTaskService>();
+builder.Services.AddSingleton<DepartmentService>();
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddControllers();
 
